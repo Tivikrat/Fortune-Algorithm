@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="uk">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Діаграма Воронного алгоритмом Форчуна</title>
+    <!-- <script type="text/javascript" src="Fortune Algorithm.js"></script> -->
+    <script>
+        const ProgramMath = Math;
+        ProgramMath.equal = function (a, b) {
+            return ProgramMath.abs(a - b) < epsilon;
+        };
+        ProgramMath.greater = function (a, b) {
+            return (a - b) > epsilon;
+        };
+        ProgramMath.greaterOrEqual = function (a, b) {
+            return (b - a) < epsilon;
+        };
+        ProgramMath.less = function (a, b) {
+            return (b - a) > epsilon;
+        };
+        ProgramMath.lessOrEqual = function (a, b) {
+            return (a - b) < epsilon;
+        };
+
+        function log(message) {
+            const logger = document.getElementById("log");
+            logger.innerHTML += "<p>" + message + "</p>";
+            while (logger.childNodes.length > 10) {
+                logger.removeChild(logger.firstChild);
+            }
+            logger.lastChild.scrollIntoView();
+        }
+
+        function format_coordinates(x, y) {
+            return "(" + x.toFixed(2) + ", " + y.toFixed(2) + ")"
+        }
+
+        class Arc {
+            edge = null;
+            sweep = -Infinity;
+            left_id = 0;
+            circleEvent = undefined;
+
+            constructor(site, parent) {
+                this.site = site;
+                this.parent = parent;
+            }
+
+            _leftParabolicCut(site, left_arc, directrix) {
+                this.parent.PARABOLIC_CUT_CALCULATIONS++;
+                if (site.y === directrix) {
+                    return site.x;
+                }
+                if (left_arc.y === directrix) {
+                    return left_arc.x;
+                }
+                if (site.y === left_arc.y) {
+                    return (site.x + left_arc.x) / 2;
+                }
+                const right_parameter = site.y - directrix;
+                const left_parameter = left_arc.y - directrix;
+                const dx = left_arc.x - site.x;
+                const aby2 = 1 / right_parameter - 1 / left_parameter;
+                const b = dx / left_parameter;
+                return (-b + ProgramMath.sqrt(b * b + aby2 * (dx * b + left_arc.y - site.y))) / aby2 + site.x;
+            }
+
+            leftParabolicCut(left_arc, sweep) {
+                this.parent.ALL_PARABOLIC_CUT_CALCULATIONS++;
+                if (this.sweep !== sweep || this.left_id !== left_arc.id) {
+                    this.sweep = sweep;
+                    this.left_id = left_arc.id;
+                    this.lBreak = this._leftParabolicCut(this.site, left_arc, sweep);
+                }
+                return this.lBreak;
+            }
+
+            isCollapsing() {
+                return this.circleEvent !== undefined && this.circleEvent.type === this.parent.CIRCLE_EVENT;
+            }
+        }
+
+        site_next_id = 1;
+        edge_next_id = 1;
+        epsilon = 1e-4;
+
+        class Site {
+            constructor(x, y) {
+                this.id = site_next_id++;
+                this.x = x;
+                this.y = y;
+            }
+        }
+
+        class Edge {
+            constructor(left_site, right_site) {
+                this.id = edge_next_id++;
+                this.left_site = left_site;
+                this.right_site = right_site;
+                this.start_point = this.end_point = undefined;
+            }
+
+            isLineSegment() {
+                return this.id && this.start_point && this.end_point;
+            }
+        }
+
+        class Cell {
+            constructor(site) {
+                this.site = site;
+                this.halfedges = [];
+            }
+        }
+
+        class Vertex {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+            }
+        }
+
+        class HalfEdge {
+            constructor(site, edge) {
+                this.site = site;
+                this.edge = edge;
+            }
+
+            isLineSegment() {
+                return this.edge.id && this.edge.start_point && this.edge.end_point;
+            }
+
+            getStartPoint() {
+                return this.edge.left_site.id === this.site.id ? this.edge.start_point : this.edge.end_point;
+            }
+
+            getEndpoint() {
+                return this.edge.left_site.id === this.site.id ? this.edge.end_point : this.edge.start_point;
+            }
+        }
+
+        class Voronoi {
+            sites = [];
+            edges = [];
+            site_events = [];
+            circle_events = [];
+            arcs = [];
+            sweep = 0;
+            SITE_SIZE = 10;
+            SITE_EVENT = 0;
+            CIRCLE_EVENT = 1;
+            VOID_EVENT = -1;
+            canvas = null;
+            canvas_box = { left: 0, width: 800, top: 0, height: 600 };
+
+            constructor() {
+                this.initCanvas();
+                this.reset();
+                // this.generateSites(100);
+            }
+
+            reset() {
+                this.NUM_SITES_PROCESSED = 0;
+                this.BINARY_SEARCHES = 0;
+                this.BINARY_SEARCH_ITERATIONS = 0;
+                this.PARABOLIC_CUT_CALCULATIONS = 0;
+                this.ALL_PARABOLIC_CUT_CALCULATIONS = 0;
+                this.BEACH_LINE_SIZE = 0;
+                this.CIRCLE_QUEUE_SIZE = 0;
+                this.LARGEST_CIRCLE_QUEUE_SIZE = 0;
+                this.NUM_VOID_EVENTS = 0;
+                this.NUM_CIRCLE_EVENTS = 0;
+                this.TOTAL_NUM_EDGES = 0;
+                this.NUM_DESTROYED_EDGES = 0;
+                this.cellsClosed = false;
+                this.queueInit();
+                this.dumpBeachLine();
+                this.draw();
+            };
+
+            clearSites() {
+                this.sites = [];
+                this.reset();
+            };
+
+            addSite(x, y) {
+                this.sites.push(new Site(x, y));
+                this.reset();
+                this.processQueueAll();
+                log("Додано пункт " + format_coordinates(x, y));
+            };
+
+            generateSites(count) {
+                this.randomSites(count);
+                this.reset();
+                this.processQueueAll();
+            };
+
+            randomSites(count) {
+                const left = this.canvas_box.left;
+                const width = this.canvas_box.width;
+                const top = this.canvas_box.top;
+                const height = this.canvas_box.height;
+                for (let i = 0; i < count; i++) {
+                    const x = ProgramMath.round(left + ProgramMath.random() * width);
+                    const y = ProgramMath.round(top + ProgramMath.random() * height);
+                    this.sites.push(new Site(x, y));
+                }
+            };
+
+            leftBreakPoint(arc_index, sweep) {
+                const arc = this.arcs[arc_index];
+                if (arc.site.y === sweep) {
+                    return arc.site.x;
+                }
+                if (arc_index === 0) {
+                    return -Infinity;
+                }
+                return arc.leftParabolicCut(this.arcs[arc_index - 1].site, sweep);
+            };
+
+            rightBreakPoint(arc_index, sweep) {
+                if (arc_index < this.arcs.length - 1) {
+                    return this.leftBreakPoint(arc_index + 1, sweep);
+                }
+                const site = this.arcs[arc_index].site;
+                return site.y === sweep ? site.x : Infinity;
+            };
+
+            findPosition(x, sweep) {
+                this.BINARY_SEARCHES++;
+                let left = 0;
+                for (let right = this.arcs.length; left < right;) {
+                    this.BINARY_SEARCH_ITERATIONS++;
+                    const index = (left + right) >> 1;
+                    if (ProgramMath.less(x, this.rightBreakPoint(index, sweep))) {
+                        right = index;
+                        continue;
+                    }
+                    if (ProgramMath.greater(x, this.leftBreakPoint(index, sweep))) {
+                        left = index + 1;
+                        continue;
+                    }
+                    return index;
+                }
+                return left;
+            };
+
+            createEdge(left_site, right_site, start_point, end_point) {
+                const edge = new Edge(left_site, right_site);
+                this.edges.push(edge);
+                if (start_point !== undefined) {
+                    this.setEdgeStartPoint(edge, left_site, right_site, start_point);
+                }
+                if (end_point !== undefined) {
+                    this.setEdgeEndPoint(edge, left_site, right_site, end_point);
+                }
+                this.cells[left_site.id].halfedges.push(new HalfEdge(left_site, edge));
+                this.cells[right_site.id].halfedges.push(new HalfEdge(right_site, edge));
+                return edge;
+            };
+
+            createBorderEdge(left_site, start_point, end_point) {
+                const edge = new Edge(left_site, null);
+                edge.start_point = start_point;
+                edge.end_point = end_point;
+                this.edges.push(edge);
+                return edge;
+            };
+
+            destroyEdge(edge) {
+                edge.id = edge.start_point = edge.end_point = undefined;
+            };
+
+            setEdgeStartPoint(edge, left_site, right_site, vertex) {
+                if (edge.start_point === undefined && edge.end_point === undefined) {
+                    edge.start_point = vertex;
+                    edge.left_site = left_site;
+                    edge.right_site = right_site;
+                } else if (edge.left_site.id === right_site.id) {
+                    edge.end_point = vertex;
+                } else {
+                    edge.start_point = vertex;
+                }
+            };
+
+            setEdgeEndPoint(edge, left_site, right_site, vertex) {
+                this.setEdgeStartPoint(edge, right_site, left_site, vertex);
+            };
+
+            removeArc(event) {
+                const x = event.center.x;
+                const y = event.center.y;
+                log("Подія кола в " + format_coordinates(x, y));
+                const sweep = event.y;
+                const deletionPoint = this.findPosition(x, sweep);
+                let left_index = deletionPoint;
+                for (; left_index - 1 > 0 && ProgramMath.equal(x, this.leftBreakPoint(left_index - 1, sweep)); --left_index) {
+                }
+                let right_index = deletionPoint;
+                for (; right_index + 1 < this.arcs.length && ProgramMath.equal(x, this.rightBreakPoint(right_index + 1, sweep)); ++right_index) {
+                }
+                for (let arc_index = left_index; arc_index <= right_index + 1; arc_index++) {
+                    let left_arc = this.arcs[arc_index - 1];
+                    let right_arc = this.arcs[arc_index];
+                    this.setEdgeStartPoint(right_arc.edge, left_arc.site, right_arc.site, new Vertex(x, y));
+                }
+                this.voidCircleEvents(left_index - 1, right_index + 1);
+                this.arcs.splice(left_index, right_index - left_index + 1);
+                let left_arc = this.arcs[left_index - 1];
+                let right_arc = this.arcs[left_index];
+                right_arc.edge = this.createEdge(left_arc.site, right_arc.site, undefined, new Vertex(x, y));
+                this.addCircleEvents(left_index - 1, sweep);
+                this.addCircleEvents(left_index, sweep);
+            };
+
+            addArc(site) {
+                const new_arc = new Arc(site, this);
+                const insertion_point = this.findPosition(site.x, site.y);
+                log("Додано дугу до пункту " + format_coordinates(site.x, site.y));
+                if (insertion_point === this.arcs.length) {
+                    this.arcs.push(new_arc);
+                    if (insertion_point === 0) {
+                        return;
+                    }
+                    new_arc.edge = this.createEdge(this.arcs[insertion_point - 1].site, new_arc.site);
+                    return;
+                }
+                if (insertion_point > 0 &&
+                    ProgramMath.equal(site.x, this.rightBreakPoint(insertion_point - 1, site.y)) &&
+                    ProgramMath.equal(site.x, this.leftBreakPoint(insertion_point, site.y))) {
+                    let left_arc = this.arcs[insertion_point - 1];
+                    let right_arc = this.arcs[insertion_point];
+                    this.voidCircleEvents(insertion_point - 1, insertion_point);
+                    const circle = this.formCircle(left_arc.site, site, right_arc.site);
+                    this.setEdgeStartPoint(right_arc.edge, left_arc.site, right_arc.site, new Vertex(circle.x, circle.y));
+                    new_arc.edge = this.createEdge(left_arc.site, new_arc.site, undefined, new Vertex(circle.x, circle.y));
+                    right_arc.edge = this.createEdge(new_arc.site, right_arc.site, undefined, new Vertex(circle.x, circle.y));
+                    this.arcs.splice(insertion_point, 0, new_arc);
+                    this.addCircleEvents(insertion_point - 1, site.y);
+                    this.addCircleEvents(insertion_point + 1, site.y);
+                    return;
+                }
+                this.voidCircleEvents(insertion_point);
+                let left_arc = this.arcs[insertion_point];
+                let right_arc = new Arc(left_arc.site, this);
+                this.arcs.splice(insertion_point + 1, 0, new_arc, right_arc);
+                new_arc.edge = right_arc.edge = this.createEdge(left_arc.site, new_arc.site);
+                this.addCircleEvents(insertion_point, site.y);
+                this.addCircleEvents(insertion_point + 2, site.y);
+            };
+
+            formCircle(a, b, c) {
+                const ax = a.x;
+                const ay = a.y;
+                const bx = b.x - ax;
+                const by = b.y - ay;
+                const cx = c.x - ax;
+                const cy = c.y - ay;
+                const d = 2 * (bx * cy - by * cx);
+                const hb = bx * bx + by * by;
+                const hc = cx * cx + cy * cy;
+                const x = (cy * hb - by * hc) / d;
+                const y = (bx * hc - cx * hb) / d;
+                return { x: x + ax, y: y + ay, radius: ProgramMath.sqrt(x * x + y * y) };
+            };
+
+            addCircleEvents(arc_index, sweep) {
+                if (arc_index <= 0 || arc_index >= this.arcs.length - 1) {
+                    return;
+                }
+                const arc = this.arcs[arc_index];
+                const left_site = this.arcs[arc_index - 1].site;
+                const center_site = this.arcs[arc_index].site;
+                const right_site = this.arcs[arc_index + 1].site;
+                if (left_site.id === right_site.id
+                    || left_site.id === center_site.id
+                    || center_site.id === right_site.id
+                    || ((left_site.y - center_site.y) * (right_site.x - center_site.x)
+                        <= (left_site.x - center_site.x) * (right_site.y - center_site.y))) {
+                    return;
+                }
+                const circle = this.formCircle(left_site, center_site, right_site);
+                log("Додано коло " + format_coordinates(circle.x, circle.y));
+                const bottom_y = circle.y + circle.radius;
+                if (!ProgramMath.greaterOrEqual(bottom_y, sweep)) {
+                    return;
+                }
+                const circle_event = {
+                    type: this.CIRCLE_EVENT,
+                    site: center_site,
+                    x: circle.x,
+                    y: bottom_y,
+                    center: { x: circle.x, y: circle.y }
+                };
+                arc.circleEvent = circle_event;
+                this.queuePushCircle(circle_event);
+            };
+
+            voidCircleEvents(left_index, right_index) {
+                if (right_index === undefined) {
+                    right_index = left_index;
+                }
+                right_index = ProgramMath.min(right_index, this.arcs.length - 1);
+                for (left_index = ProgramMath.max(left_index, 0); left_index <= right_index; ++left_index) {
+                    const arc = this.arcs[left_index];
+                    if (arc.circleEvent !== undefined) {
+                        arc.circleEvent.type = this.VOID_EVENT;
+                        arc.circleEvent = undefined;
+                    }
+                }
+            };
+
+            queueInit() {
+                this.sweep = 0;
+                this.site_events = [];
+                this.circle_events = [];
+                this.arcs = [];
+                this.edges = [];
+                this.cells = {};
+                this.sites.forEach(site => {
+                    this.queuePushSite({ type: this.SITE_EVENT, x: site.x, y: site.y, site: site });
+                });
+                this.NUM_SITES_PROCESSED = this.site_events.length;
+            };
+
+            queueSanitize() {
+                let right_index = this.circle_events.length;
+                if (!right_index) {
+                    return;
+                }
+                let left_index = right_index;
+                for (; left_index && this.circle_events[left_index - 1].type === this.VOID_EVENT; --left_index) {
+                }
+                let events_count = right_index - left_index;
+                if (events_count) {
+                    this.NUM_VOID_EVENTS += events_count;
+                    this.circle_events.splice(left_index, events_count);
+                }
+                const arcs_count = this.arcs.length;
+                if (this.circle_events.length < arcs_count * 2) {
+                    return;
+                }
+                while (true) {
+                    for (right_index = left_index - 1; right_index > 0 && this.circle_events[right_index - 1].type !== this.VOID_EVENT; --right_index) {
+                    }
+                    if (right_index <= 0) {
+                        break;
+                    }
+                    for (left_index = right_index - 1; left_index > 0 && this.circle_events[left_index - 1].type === this.VOID_EVENT; --left_index) {
+                    }
+                    events_count = right_index - left_index;
+                    this.NUM_VOID_EVENTS += events_count;
+                    this.circle_events.splice(left_index, events_count);
+                    if (this.circle_events.length < arcs_count) {
+                        return;
+                    }
+                }
+            };
+
+            queueIsEmpty() {
+                this.queueSanitize();
+                return this.site_events.length === 0 && this.circle_events.length === 0;
+            };
+
+            queuePeek() {
+                this.queueSanitize();
+                const site_event = this.site_events.length > 0 ? this.site_events[this.site_events.length - 1] : null;
+                const circle_event = this.circle_events.length > 0 ? this.circle_events[this.circle_events.length - 1] : null;
+                if (Boolean(site_event) !== Boolean(circle_event)) {
+                    return site_event ? site_event : circle_event;
+                }
+                if (!site_event) {
+                    return null;
+                }
+                if (site_event.y < circle_event.y || (site_event.y === circle_event.y && site_event.x < circle_event.x)) {
+                    return site_event;
+                }
+                return circle_event;
+            };
+
+            queuePop() {
+                const event = this.queuePeek();
+                if (event) {
+                    if (event.type === this.SITE_EVENT) {
+                        this.site_events.pop();
+                    } else {
+                        this.circle_events.pop();
+                    }
+                }
+                return event;
+            };
+
+            queuePushSite(site) {
+                let right = this.site_events.length;
+                let left = 0;
+                while (left < right) {
+                    const middle = (left + right) >> 1;
+                    let difference = site.y - this.site_events[middle].y;
+                    if (!difference) {
+                        difference = site.x - this.site_events[middle].x;
+                    }
+                    if (difference > 0) {
+                        right = middle;
+                    } else if (difference < 0) {
+                        left = middle + 1;
+                    } else {
+                        return;
+                    }
+                }
+                this.site_events.splice(left, 0, site);
+            };
+
+            queuePushCircle(circle) {
+                this.NUM_CIRCLE_EVENTS++;
+                let right = this.circle_events.length;
+                let left = 0;
+                while (left < right) {
+                    let middle = (left + right) >> 1;
+                    let difference = circle.y - this.circle_events[middle].y;
+                    if (!difference) {
+                        difference = circle.x - this.circle_events[middle].x;
+                    }
+                    if (difference > 0) {
+                        right = middle;
+                    } else {
+                        left = middle + 1;
+                    }
+                }
+                this.circle_events.splice(left, 0, circle);
+            };
+
+            processQueueOne() {
+                const event = this.queuePop();
+                if (!event) {
+                    return;
+                }
+                this.sweep = event.y;
+                if (event.type === this.SITE_EVENT) {
+                    this.cells[event.site.id] = new Cell(event.site);
+                    this.addArc(event.site);
+                    this.BEACH_LINE_SIZE += this.arcs.length;
+                    this.CIRCLE_QUEUE_SIZE += this.circle_events.length;
+                    this.LARGEST_CIRCLE_QUEUE_SIZE = ProgramMath.max(this.circle_events.length, this.LARGEST_CIRCLE_QUEUE_SIZE);
+                } else {
+                    this.removeArc(event);
+                }
+                if (this.queueIsEmpty()) {
+                    this.closeCells();
+                }
+            };
+
+            processQueueN(count) {
+                for (; count > 0 && !this.queueIsEmpty(); --count) {
+                    this.processQueueOne();
+                }
+                if (this.queueIsEmpty()) {
+                    this.sweep = ProgramMath.max(this.sweep, this.canvas.height);
+                }
+            };
+
+            processQueueAll() {
+                this.processQueueN(Infinity);
+                this.dumpBeachLine();
+                this.draw();
+            };
+
+            processUpTo(y) {
+                while (!this.queueIsEmpty()) {
+                    let event = this.queuePeek();
+                    if (event.y > y) {
+                        break;
+                    }
+                    this.processQueueOne();
+                }
+                this.sweep = ProgramMath.max(this.sweep, y);
+                if (this.sweep > this.canvas.height) {
+                    this.processQueueN(Infinity);
+                }
+            };
+
+            getBisector(start_point, end_point) {
+                let bisector = { x: (start_point.x + end_point.x) / 2, y: (start_point.y + end_point.y) / 2 };
+                if (end_point.y === start_point.y) {
+                    return bisector;
+                }
+                bisector.m = (start_point.x - end_point.x) / (end_point.y - start_point.y);
+                bisector.b = bisector.y - bisector.m * bisector.x;
+                return bisector;
+            };
+
+            connectEdge(edge) {
+                let end_point = edge.end_point;
+                if (!!end_point) {
+                    return true;
+                }
+                let start_point = edge.start_point;
+                const xl = this.canvas_box.left;
+                const xr = this.canvas_box.width;
+                const yt = this.canvas_box.top;
+                const yb = this.canvas_box.height;
+                const left_site = edge.left_site;
+                const right_site = edge.right_site;
+                const bisector = this.getBisector(left_site, right_site);
+                if (bisector.m === undefined) {
+                    if (bisector.x < xl || bisector.x >= xr) {
+                        return false;
+                    }
+                    if (left_site.x > right_site.x) {
+                        if (start_point === undefined) {
+                            start_point = new Vertex(bisector.x, yt);
+                        } else if (start_point.y >= yb) {
+                            return false;
+                        }
+                        end_point = new Vertex(bisector.x, yb);
+                    } else {
+                        if (start_point === undefined) {
+                            start_point = new Vertex(bisector.x, yb);
+                        } else if (start_point.y < yt) {
+                            return false;
+                        }
+                        end_point = new Vertex(bisector.x, yt);
+                    }
+                } else if (bisector.m < 1) {
+                    if (left_site.y < right_site.y) {
+                        if (start_point === undefined) {
+                            start_point = new Vertex(xl, bisector.m * xl + bisector.b);
+                        } else if (start_point.x >= xr) {
+                            return false;
+                        }
+                        end_point = new Vertex(xr, bisector.m * xr + bisector.b);
+                    } else {
+                        if (start_point === undefined) {
+                            start_point = new Vertex(xr, bisector.m * xr + bisector.b);
+                        } else if (start_point.x < xl) {
+                            return false;
+                        }
+                        end_point = new Vertex(xl, bisector.m * xl + bisector.b);
+                    }
+                } else {
+                    if (left_site.x > right_site.x) {
+                        if (start_point === undefined) {
+                            start_point = new Vertex((yt - bisector.b) / bisector.m, yt);
+                        } else if (start_point.y >= yb) {
+                            return false;
+                        }
+                        end_point = new Vertex((yb - bisector.b) / bisector.m, yb);
+                    } else {
+                        if (start_point === undefined) {
+                            start_point = new Vertex((yb - bisector.b) / bisector.m, yb);
+                        } else if (start_point.y < yt) {
+                            return false;
+                        }
+                        end_point = new Vertex((yt - bisector.b) / bisector.m, yt);
+                    }
+                }
+
+                edge.start_point = start_point;
+                edge.end_point = end_point;
+                return true;
+            };
+
+            clipEdge(edge) {
+                const ax = edge.start_point.x;
+                const ay = edge.start_point.y;
+                const bx = edge.end_point.x;
+                const by = edge.end_point.y;
+                let t0 = 0;
+                let t1 = 1;
+                const dx = bx - ax;
+                const dy = by - ay;
+                let q = ax - this.canvas_box.left;
+                if (dx === 0 && q < 0) {
+                    return false;
+                }
+                let r = -q / dx;
+                if (dx < 0) {
+                    if (r < t0) {
+                        return false;
+                    } else if (r < t1) {
+                        t1 = r;
+                    }
+                } else if (dx > 0) {
+                    if (r > t1) {
+                        return false;
+                    } else if (r > t0) {
+                        t0 = r;
+                    }
+                }
+                q = this.canvas_box.width - ax;
+                if (dx === 0 && q < 0) {
+                    return false;
+                }
+                r = q / dx;
+                if (dx < 0) {
+                    if (r > t1) {
+                        return false;
+                    } else if (r > t0) {
+                        t0 = r;
+                    }
+                } else if (dx > 0) {
+                    if (r < t0) {
+                        return false;
+                    } else if (r < t1) {
+                        t1 = r;
+                    }
+                }
+                q = ay - this.canvas_box.top;
+                if (dy === 0 && q < 0) {
+                    return false;
+                }
+                r = -q / dy;
+                if (dy < 0) {
+                    if (r < t0) {
+                        return false;
+                    } else if (r < t1) {
+                        t1 = r;
+                    }
+                } else if (dy > 0) {
+                    if (r > t1) {
+                        return false;
+                    } else if (r > t0) {
+                        t0 = r;
+                    }
+                }
+                q = this.canvas_box.height - ay;
+                if (dy === 0 && q < 0) {
+                    return false;
+                }
+                r = q / dy;
+                if (dy < 0) {
+                    if (r > t1) {
+                        return false;
+                    } else if (r > t0) {
+                        t0 = r;
+                    }
+                } else if (dy > 0) {
+                    if (r < t0) {
+                        return false;
+                    } else if (r < t1) {
+                        t1 = r;
+                    }
+                }
+                edge.start_point.x = ax + t0 * dx;
+                edge.start_point.y = ay + t0 * dy;
+                edge.end_point.x = ax + t1 * dx;
+                edge.end_point.y = ay + t1 * dy;
+                return true;
+            };
+
+            clipEdges() {
+                log("Обрамлення графу");
+                const edges = this.edges;
+                const edges_count = this.TOTAL_NUM_EDGES = edges.length;
+                let edge;
+                for (let edge_index = edges_count - 1; edge_index >= 0; edge_index -= 1) {
+                    edge = edges[edge_index];
+                    if (!this.connectEdge(edge) || !this.clipEdge(edge) || this.verticesAreEqual(edge.start_point, edge.end_point)) {
+                        this.NUM_DESTROYED_EDGES++;
+                        this.destroyEdge(edge);
+                        edges.splice(edge_index, 1);
+                    }
+                }
+            };
+
+            verticesAreEqual(a, b) {
+                return ProgramMath.equal(a.x, b.x) && ProgramMath.equal(a.y, b.y);
+            };
+
+            sortHalfEdgesCallback(a, b) {
+                const as = a.getStartPoint();
+                const ae = a.getEndpoint();
+                const bs = b.getStartPoint();
+                const be = b.getEndpoint();
+                return self.Math.atan2(be.y - bs.y, be.x - bs.x) - self.Math.atan2(ae.y - as.y, ae.x - as.x);
+            };
+
+            closeCells() {
+                if (this.cellsClosed) {
+                    return;
+                }
+                const xl = this.canvas_box.left;
+                const xr = this.canvas_box.width;
+                const yt = this.canvas_box.top;
+                const yb = this.canvas_box.height;
+                this.clipEdges();
+                const cells = this.cells;
+                let cell;
+                let left_index, right_index;
+                let half_edges, half_edges_count;
+                let edge;
+                let start_point, end_point;
+                let va, vb;
+                for (const cell_index in cells) {
+                    cell = cells[cell_index];
+                    half_edges = cell.halfedges;
+                    left_index = half_edges.length;
+                    while (left_index) {
+                        for (right_index = left_index; right_index > 0 && half_edges[right_index - 1].isLineSegment(); --right_index) {
+                        }
+                        for (left_index = right_index; left_index > 0 && !half_edges[left_index - 1].isLineSegment(); --left_index) {
+                        }
+                        if (left_index === right_index) {
+                            break;
+                        }
+                        half_edges.splice(left_index, right_index - left_index);
+                    }
+                    if (half_edges.length === 0) {
+                        delete cells[cell_index];
+                        continue;
+                    }
+                    half_edges.sort(this.sortHalfEdgesCallback);
+                    half_edges_count = half_edges.length;
+                    for (left_index = 0; left_index < half_edges_count; ++left_index) {
+                        right_index = (left_index + 1) % half_edges_count;
+                        end_point = half_edges[left_index].getEndpoint();
+                        start_point = half_edges[right_index].getStartPoint();
+                        if (!this.verticesAreEqual(end_point, start_point)) {
+                            va = new Vertex(end_point.x, end_point.y);
+                            if (ProgramMath.equal(end_point.x, xl) && ProgramMath.less(end_point.y, yb)) {
+                                vb = new Vertex(xl, ProgramMath.equal(start_point.x, xl) ? start_point.y : yb);
+                            } else if (ProgramMath.equal(end_point.y, yb) && ProgramMath.less(end_point.x, xr)) {
+                                vb = new Vertex(ProgramMath.equal(start_point.y, yb) ? start_point.x : xr, yb);
+                            } else if (ProgramMath.equal(end_point.x, xr) && ProgramMath.greater(end_point.y, yt)) {
+                                vb = new Vertex(xr, ProgramMath.equal(start_point.x, xr) ? start_point.y : yt);
+                            } else if (ProgramMath.equal(end_point.y, yt) && ProgramMath.greater(end_point.x, xl)) {
+                                vb = new Vertex(ProgramMath.equal(start_point.y, yt) ? start_point.x : xl, yt);
+                            }
+                            edge = this.createBorderEdge(cell.site, va, vb);
+                            half_edges.splice(left_index + 1, 0, new HalfEdge(cell.site, edge));
+                            half_edges_count = half_edges.length;
+                        }
+                    }
+                }
+                this.cellsClosed = true;
+            };
+
+            initCanvas() {
+                if (this.canvas) {
+                    return;
+                }
+                const canvas = document.getElementById('voronoiCanvas');
+                if (!canvas.getContext) {
+                    return;
+                }
+                const ctx = canvas.getContext('2d');
+                if (!ctx) {
+                    return;
+                }
+                this.canvas = canvas;
+                this.setCanvasSize(canvas.width, canvas.height);
+                this.drawBackground(ctx);
+                const me = this;
+                canvas.onclick = function (e) {
+                    if (!e) {
+                        e = self.event;
+                    }
+                    let x = 0;
+                    let y = 0;
+                    if (e.pageX || e.pageY) {
+                        x = e.pageX;
+                        y = e.pageY;
+                    } else if (e.clientX || e.clientY) {
+                        x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
+                        y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+                    }
+                    me.addSite(x - this.offsetLeft, y - this.offsetTop);
+                };
+            };
+
+            setCanvasSize(width, height) {
+                if (isNaN(width) || isNaN(height)) {
+                    return;
+                }
+                this.canvas.width = ProgramMath.max(Number(width), 100);
+                this.canvas.height = ProgramMath.max(Number(height), 100);
+                this.canvas_box.left = 0;
+                this.canvas_box.width = width;
+                this.canvas_box.top = 0;
+                this.canvas_box.height = height;
+                this.draw();
+            };
+
+            drawLine(ctx, from, to, style = '#333', width = 1) {
+                ctx.beginPath();
+                ctx.strokeStyle = style;
+                ctx.lineWidth = width;
+                if (from.x === undefined) {
+                    ctx.moveTo(...from);
+                    ctx.lineTo(...to);
+                } else {
+                    ctx.moveTo(from.x, from.y);
+                    ctx.lineTo(to.x, to.y);
+                }
+                ctx.stroke();
+            }
+
+            drawRectangle(ctx, rect, style = '#000') {
+                ctx.beginPath();
+                ctx.rect(...rect);
+                ctx.fillStyle = style;
+                ctx.fill();
+            }
+
+            draw() {
+                const ctx = this.canvas.getContext('2d');
+                this.drawBackground(ctx);
+                this.drawSites(ctx);
+                if (this.sweep < this.canvas.height) {
+                    this.drawLine(ctx, [0, this.sweep], [this.canvas.width, this.sweep], '#77f', 3)
+                }
+                this.drawEdges(ctx);
+                if (!this.queueIsEmpty()) {
+                    this.drawVertices(ctx);
+                }
+                if (this.sweep < this.canvas.height) {
+                    this.drawBeachLine(ctx);
+                }
+            };
+
+            drawBackground(ctx) {
+                this.drawRectangle(ctx, [0, 0, this.canvas.width, this.canvas.height], '#333')
+            };
+
+            drawSite(ctx, site, style = '#fff') {
+                this.drawArc(ctx, { x: site.x, y: site.y }, 1, 0, ProgramMath.PI * 2, false, style, this.SITE_SIZE);
+            }
+
+            drawSites(ctx) {
+                this.sites.forEach(site => {
+                    this.drawSite(ctx, site);
+                });
+            };
+
+            drawArc(ctx, center, radius, start_angle, end_angle, anti_clockwise = false, style = '#fff', width) {
+                ctx.beginPath();
+                ctx.strokeStyle = style;
+                ctx.lineWidth = width;
+                ctx.arc(center.x, center.y, radius, start_angle, end_angle, anti_clockwise);
+                ctx.stroke();
+            }
+
+            drawQuadraticCurve(ctx, left, center, right, style = '#fff', width = 1) {
+                ctx.beginPath();
+                ctx.strokeStyle = style;
+                ctx.lineWidth = width;
+                ctx.moveTo(...left);
+                ctx.quadraticCurveTo(...center, ...right);
+                ctx.stroke();
+            }
+
+            drawBeachLine(ctx) {
+                const arcs_count = this.arcs.length;
+                if (!arcs_count) {
+                    return;
+                }
+                const directrix = this.sweep;
+                let arc = this.arcs[0];
+                let left_x = 0;
+                let left_y;
+                let focus_x = arc.site.x;
+                let focus_y = arc.site.y;
+                let parameter;
+                if (focus_y === directrix) {
+                    left_x = focus_x;
+                    left_y = 0;
+                } else {
+                    parameter = (focus_y - directrix) / 2;
+                    left_y = (focus_x * focus_x) / (4 * parameter) + focus_y - parameter;
+                }
+                for (let arc_index = 0; arc_index < arcs_count; arc_index++) {
+                    arc = this.arcs[arc_index];
+                    if (arc.isCollapsing()) {
+                        const circle_event = arc.circleEvent;
+                        ctx.save();
+                        this.drawSite(ctx, circle_event.center, '#ff7');
+                        this.drawArc(ctx, circle_event.center, circle_event.y - circle_event.center.y, 0, ProgramMath.PI * 2, true, '#ff7', 2);
+                        this.drawSite(ctx, circle_event, '#8f8');
+                        ctx.restore();
+                    }
+                    let right_x, right_y;
+                    focus_x = arc.site.x;
+                    focus_y = arc.site.y;
+                    if (focus_y === directrix) {
+                        right_x = focus_x;
+                        let neighbour = arc_index > 0 ? this.arcs[arc_index - 1] : null;
+                        if (!neighbour || neighbour.site.y === directrix) {
+                            neighbour = arc_index < this.arcs.length - 1 ? this.arcs[arc_index + 1] : null;
+                        }
+                        if (!neighbour || neighbour.site.y === directrix) {
+                            right_y = 0;
+                        } else {
+                            parameter = (neighbour.site.y - directrix) / 2;
+                            right_y = ProgramMath.pow(focus_x - neighbour.site.x, 2) / (4 * parameter) + neighbour.site.y - parameter;
+                        }
+                        this.drawLine(ctx, [focus_x, focus_y], [focus_x, right_y], '#8f8', 3);
+                    } else {
+                        const width = this.canvas.width;
+                        right_x = ProgramMath.min(this.rightBreakPoint(arc_index, directrix), width);
+                        parameter = (focus_y - directrix) / 2;
+                        right_y = ProgramMath.pow(right_x - focus_x, 2) / (4 * parameter) + focus_y - parameter;
+                        if (right_x >= 0 && left_x < width && right_x > left_x) {
+                            let ac_x = focus_x - left_x;
+                            let ac_y = focus_y - directrix;
+                            let bc_x = focus_x - right_x;
+                            let gx = (right_x + focus_x) / 2;
+                            let gy = (directrix + focus_y) / 2;
+                            let n = ((gx - (left_x + focus_x) / 2) * ac_x) / (ac_y * ac_x - bc_x * ac_y);
+                            this.drawQuadraticCurve(ctx, [left_x, left_y], [gx - ac_y * n, gy + bc_x * n], [right_x, right_y], arc.isCollapsing() ? '#f88' : '#8f8', 3);
+                        }
+                    }
+                    left_x = right_x;
+                    left_y = right_y;
+                }
+            };
+
+            drawVertices(ctx) {
+                this.edges.forEach(edge => {
+                    if (edge.start_point !== undefined) {
+                        this.drawSite(ctx, edge.start_point, '#88f');
+                    }
+                    if (edge.end_point !== undefined) {
+                        this.drawSite(ctx, edge.end_point, '#88f');
+                    }
+                });
+            };
+
+            drawEdges(ctx) {
+                this.edges.forEach(edge => {
+                    if (edge.start_point && edge.end_point) {
+                        this.drawLine(ctx, edge.start_point, edge.end_point, '#fff', 2);
+                    }
+                });
+            };
+
+            _parseValues(string) {
+                const parts = string.split(/[^0-9-.+e]+/);
+                let values = [];
+                let nValues = parts.length;
+                for (let iValue = 0; iValue < nValues; ++iValue) {
+                    const value = parseFloat(parts[iValue]);
+                    if (!isNaN(value)) {
+                        values.push(value);
+                    }
+                }
+                return values;
+            }
+
+            parseSites(string) {
+                const values = this._parseValues(string);
+                for (let iPair = 0; iPair < values.length - 1; iPair += 2) {
+                    let x = values[iPair];
+                    let y = values[iPair + 1];;
+                    this.sites.push(new Site(x, y));
+                }
+                this.reset();
+                this.processQueueAll();
+            };
+
+            dumpBeachLine() {
+                const el = document.getElementById('console');
+                if (el) {
+                    let html = '';
+                    html += 'Total number of sites processed: ' + this.NUM_SITES_PROCESSED;
+                    html += '<br>Number of binary searches: ' + this.BINARY_SEARCHES;
+                    html += '<br>Avg number of iterations per binary search: ' + (this.BINARY_SEARCH_ITERATIONS / this.BINARY_SEARCHES).toFixed(3);
+                    html += '<br>Number of parabolic cut calculations: ' + this.PARABOLIC_CUT_CALCULATIONS + ' out of ' + this.ALL_PARABOLIC_CUT_CALCULATIONS + ' total';
+                    html += '<br>Average beachline size: ' + (this.BEACH_LINE_SIZE / this.sites.length).toFixed(3);
+                    html += '<br>Average circle event queue size: ' + (this.CIRCLE_QUEUE_SIZE / this.sites.length).toFixed(3);
+                    html += '<br>Total number of cancelled circle events: ' + this.NUM_VOID_EVENTS + ' out of ' + this.NUM_CIRCLE_EVENTS + ' total (' + (this.NUM_VOID_EVENTS / this.NUM_CIRCLE_EVENTS * 100).toFixed(3) + ' %)';
+                    html += '<br>Largest circle events queue size: ' + this.LARGEST_CIRCLE_QUEUE_SIZE + ' events';
+                    html += '<br>Number of destroyed edges (outside the viewport): ' + this.NUM_DESTROYED_EDGES + ' out of a total of ' + this.TOTAL_NUM_EDGES + ' edges<br><br>';
+
+                    html += 'Beachline is composed of ' + this.arcs.length + ' beach sections:<br>';
+                    this.arcs.forEach((arc, index) => {
+                        let htmledge = 'edge: ';
+                        let edge = arc.edge;
+                        if (edge) {
+                            htmledge += 'id=' + edge.id;
+                            if (edge.start_point) {
+                                htmledge += ', start=(x:<b>' + (edge.start_point.x).toFixed(1) + '</b>, y:<b>' + (edge.start_point.y).toFixed(1) + '</b>)';
+                            }
+                            if (edge.end_point) {
+                                htmledge += ', end=(x:<b>' + (edge.end_point.x).toFixed(1) + '</b>, y:<b>' + (edge.end_point.y).toFixed(1) + '</b>)';
+                            }
+                        } else {
+                            htmledge += 'none';
+                        }
+                        if (!edge) {
+                            htmledge = '<span style="margin-left:2em;color:#ccc">' + htmledge;
+                        } else if (!edge.start_point && !edge.end_point) {
+                            htmledge = '<span style="margin-left:2em;color:#888">' + htmledge;
+                        } else {
+                            htmledge = '<span style="margin-left:2em;color:#444">' + htmledge;
+                        }
+                        html += htmledge + '</span><br>';
+                        const left_x = this.leftBreakPoint(index, this.sweep);
+                        const right_x = this.rightBreakPoint(index, this.sweep);
+                        html += '<span style="color:' + (arc.isCollapsing() ? '#800' : '#080') + '">';
+                        html += 'left x=<b>' + left_x.toFixed(4) + '</b>, right x=<b>' + right_x.toFixed(4) + '</b>, site={id:' + arc.site.id + ', x:<b>' + arc.site.x + '</b>, y:<b>' + arc.site.y + '</b>}';
+                        if (arc.isCollapsing()) {
+                            html += ', collapsing at {x:<b>' + arc.circleEvent.x.toFixed(4) + '</b>, y:<b>' + arc.circleEvent.y.toFixed(4) + '</b>}';
+                        }
+                        html += '</span><br>';
+                    });
+                    el.innerHTML = html;
+                }
+            };
+        }
+
+        let VoronoiAnimateTimer;
+        let VoronoiAnimatePixels;
+        let VoronoiAnimateDelay;
+
+        function VoronoiAnimateCallback() {
+            VoronoiAnimateTimer = undefined;
+            voronoi.processUpTo(voronoi.sweep + VoronoiAnimatePixels);
+            voronoi.draw();
+            if (!voronoi.queueIsEmpty() || voronoi.sweep < voronoi.canvas_box.height) {
+                VoronoiAnimateTimer = setTimeout(VoronoiAnimateCallback, VoronoiAnimateDelay);
+            } else {
+                voronoi.dumpBeachLine();
+            }
+        }
+
+        function VoronoiAnimate(px, ms) {
+            if (VoronoiAnimateTimer !== undefined) {
+                clearTimeout(VoronoiAnimateTimer);
+                VoronoiAnimateTimer = undefined;
+            }
+            if (voronoi.queueIsEmpty()) {
+                voronoi.reset();
+            }
+            VoronoiAnimatePixels = isNaN(px) ? 1 : ProgramMath.max(px, 1);
+            VoronoiAnimateDelay = isNaN(ms) ? 200 : ProgramMath.max(ms, 5);
+            VoronoiAnimateTimer = setTimeout(VoronoiAnimateCallback, VoronoiAnimateDelay);
+        }
+
+        function VoronoiAnimateStop() {
+            if (VoronoiAnimateTimer !== undefined) {
+                clearTimeout(VoronoiAnimateTimer);
+                VoronoiAnimateTimer = undefined;
+                voronoi.dumpBeachLine();
+            }
+        }
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            font-family: Verdana, fantasy;
+        }
+
+        html,
+        body {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow-y: hidden;
+        }
+
+        body {
+            display: flex;
+        }
+
+        #canvasParent {
+            flex-grow: 1;
+        }
+
+        #voronoiCanvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .actionsPanel {
+            color: white;
+            width: 300px;
+            background: #666666;
+            padding: 10px;
+            border: 3px solid white;
+            overflow-y: auto;
+        }
+
+        h3 {
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        button,
+        label {
+            margin: 5px;
+        }
+
+        label {
+            display: flex;
+            flex-direction: column;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        input,
+        button {
+            color: white;
+            background: #333333;
+            font-size: large;
+            padding: 5px;
+            border: 2px solid #111111;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="log"
+        style="position: absolute; height: 100%; overflow-y: scroll; background: rgba(63, 63, 63, 0.8); color: white">
+    </div>
+    <div id="canvasParent">
+        <noscript>You need to enable Javascript in your browser for this page to display properly.</noscript>
+        <canvas id="voronoiCanvas"></canvas>
+        <div id="voronoiNoCanvasAlert" style="display:none;padding:1em;background-color:#fcc;color:black;">
+            <p>Your browser doesn't support the HTML5 &lt;canvas&gt; element technology.</p>
+            <p>See <a target="_blank" href="http://en.wikipedia.org/wiki/Canvas_(HTML_element)">Wikipedia</a> for
+                information on which browsers support the <u>HTML5 &lt;canvas&gt;</u> technology.</p>
+        </div>
+    </div>
+    <div class="actionsPanel">
+        <h3>Пункти</h3>
+        <div>
+            <label>
+                Розмір пунктів, пікселів:
+                <input type="number" value="4" maxlength="2" style="width: 5ch" id="siteSize"
+                    onchange="voronoi.SITE_SIZE = this.value; voronoi.draw()">
+            </label>
+            <label>
+                Кількість:
+                <input type="number" value="100" id="voronoiNumberSites" maxlength="5">
+            </label>
+        </div>
+        <div style="display: flex; flex-direction: column">
+            <button
+                onclick="voronoi.clearSites();voronoi.generateSites(parseInt(document.getElementById('voronoiNumberSites').value,10));">
+                Створити нову комбінацію
+            </button>
+            <button onclick="voronoi.generateSites(parseInt(document.getElementById('voronoiNumberSites').value,10));">
+                Додати до цієї комбінації
+            </button>
+            <label>
+                Власний приклад
+                <textarea id="example" aria-multiline="true"></textarea>
+                <button onclick="voronoi.parseSites(document.getElementById('example').value)">Додати пункти</button>
+            </label>
+            <button onclick="voronoi.clearSites();">Прибрати всі</button>
+        </div>
+        <h3>Виконання</h3>
+        <div style="display: flex; flex-direction: column; flex-wrap: wrap">
+            <button onclick="voronoi.processQueueOne();voronoi.draw();voronoi.dumpBeachLine();">▶ Крок</button>
+            <label for="voronoiProcessN" style="display: block">
+                <input id="voronoiProcessN" type="number" value="10" maxlength="5" style="width: 10ch" />
+                <button style="flex-grow: 2"
+                    onclick="voronoi.processQueueN(parseInt(document.getElementById('voronoiProcessN').value,10));voronoi.draw();voronoi.dumpBeachLine();">
+                    ▶▶ Кроків
+                </button>
+            </label>
+            <button onclick="voronoi.processQueueAll();">⏭ До кінця</button>
+            <button onclick="voronoi.reset();">↻ Заново</button>
+        </div>
+        <h3>Анімація</h3>
+        <div style="display: flex; flex-direction: column">
+            <label for="sweepLineStep">
+                Кількість пікселів:
+                <input id="sweepLineStep" type="number" value="1" />
+            </label>
+            <label for="sweepLineDelay">
+                Час, мс:
+                <input id="sweepLineDelay" type="number" value="20" />
+            </label>
+            <button id="MoveSweepLine">
+                ⟱ Перемістити сканувальну лінію
+            </button>
+            <button id="AnimateSweepLine">
+                ⏺ Анімація сканувальної лінії
+            </button>
+            <button onclick="VoronoiAnimateStop();">⏸ Пауза</button>
+            <label style="display: flex; flex-direction: row">
+                <input id="is_logging" type="checkbox"
+                    onchange="document.getElementById('log').hidden = !document.getElementById('is_logging').checked">
+                Коментарі
+            </label>
+        </div>
+    </div>
+    <script>
+        let voronoi;
+
+        function resizeCanvas() {
+            let canvas = document.getElementById("voronoiCanvas");
+            let style = window.getComputedStyle(canvas, "{}");
+            if (voronoi) {
+                voronoi.setCanvasSize(parseInt(style.width), parseInt(style.height));
+            } else {
+                canvas.width = parseInt(style.width);
+                canvas.height = parseInt(style.height);
+            }
+        }
+
+        window.onresize = () => {
+            resizeCanvas();
+        };
+        window.onload = () => {
+            resizeCanvas();
+            voronoi = new Voronoi();
+            voronoi.SITE_SIZE = document.getElementById('siteSize').value; voronoi.draw();
+            document.getElementById('log').hidden = !document.getElementById('is_logging').checked;
+            document.getElementById("AnimateSweepLine").onclick = () => {
+                const step = parseInt(document.getElementById('sweepLineStep').value, 10);
+                const time = parseInt(document.getElementById('sweepLineDelay').value, 10);
+                VoronoiAnimate(step, time);
+                document.getElementById('sweepLineStep').value = VoronoiAnimatePixels;
+                document.getElementById('sweepLineDelay').value = VoronoiAnimateDelay;
+            };
+
+            document.getElementById("MoveSweepLine").onclick = () => {
+                voronoi.processUpTo(voronoi.sweep + parseInt(document.getElementById('sweepLineStep').value, 10));
+                voronoi.draw();
+                voronoi.dumpBeachLine();
+            };
+        }
+    </script>
+</body>
+
+</html>
