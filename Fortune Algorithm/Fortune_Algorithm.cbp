@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="Fortune_Algorithm"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="D:/Projects/Fortune Algorithm/Fortune Algorithm"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="C:/Users/Tivikrat/Desktop/mingw64/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="C:/Users/Tivikrat/Desktop/mingw64/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/Users/Tivikrat/Desktop/mingw64/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/Users/Tivikrat/Desktop/mingw64/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="D:/Projects/Fortune Algorithm/Fortune Algorithm"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="C:/Users/Tivikrat/Desktop/mingw64/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="C:/Users/Tivikrat/Desktop/mingw64/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/Users/Tivikrat/Desktop/mingw64/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/Users/Tivikrat/Desktop/mingw64/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Fortune_Algorithm">
+				<Option output="D:/Projects/Fortune Algorithm/Fortune Algorithm/Fortune_Algorithm.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="D:/Projects/Fortune Algorithm/Fortune Algorithm"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="D:/Projects/Fortune Algorithm/Fortune Algorithm/."/>
+					<Add directory="C:/Users/Tivikrat/Desktop/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/7.3.0/include/c++"/>
+					<Add directory="C:/Users/Tivikrat/Desktop/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/7.3.0/include/c++/x86_64-w64-mingw32"/>
+					<Add directory="C:/Users/Tivikrat/Desktop/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/7.3.0/include/c++/backward"/>
+					<Add directory="C:/Users/Tivikrat/Desktop/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/7.3.0/include"/>
+					<Add directory="C:/Users/Tivikrat/Desktop/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/7.3.0/include-fixed"/>
+					<Add directory="C:/Users/Tivikrat/Desktop/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/7.3.0/../../../../x86_64-w64-mingw32/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="C:/Users/Tivikrat/Desktop/mingw64/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 Fortune_Algorithm"/>
+					<CompileFile command="C:/Users/Tivikrat/Desktop/mingw64/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/Users/Tivikrat/Desktop/mingw64/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/Users/Tivikrat/Desktop/mingw64/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Fortune_Algorithm/fast">
+				<Option output="D:/Projects/Fortune Algorithm/Fortune Algorithm/Fortune_Algorithm.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="D:/Projects/Fortune Algorithm/Fortune Algorithm"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="D:/Projects/Fortune Algorithm/Fortune Algorithm/."/>
+					<Add directory="C:/Users/Tivikrat/Desktop/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/7.3.0/include/c++"/>
+					<Add directory="C:/Users/Tivikrat/Desktop/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/7.3.0/include/c++/x86_64-w64-mingw32"/>
+					<Add directory="C:/Users/Tivikrat/Desktop/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/7.3.0/include/c++/backward"/>
+					<Add directory="C:/Users/Tivikrat/Desktop/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/7.3.0/include"/>
+					<Add directory="C:/Users/Tivikrat/Desktop/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/7.3.0/include-fixed"/>
+					<Add directory="C:/Users/Tivikrat/Desktop/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/7.3.0/../../../../x86_64-w64-mingw32/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="C:/Users/Tivikrat/Desktop/mingw64/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 Fortune_Algorithm/fast"/>
+					<CompileFile command="C:/Users/Tivikrat/Desktop/mingw64/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/Users/Tivikrat/Desktop/mingw64/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/Users/Tivikrat/Desktop/mingw64/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="D:/Projects/Fortune Algorithm/Fortune Algorithm"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="C:/Users/Tivikrat/Desktop/mingw64/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="C:/Users/Tivikrat/Desktop/mingw64/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/Users/Tivikrat/Desktop/mingw64/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/Users/Tivikrat/Desktop/mingw64/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="D:/Projects/Fortune Algorithm/Fortune Algorithm/ArcNode.h">
+			<Option target="Fortune_Algorithm"/>
+		</Unit>
+		<Unit filename="D:/Projects/Fortune Algorithm/Fortune Algorithm/Beachline.h">
+			<Option target="Fortune_Algorithm"/>
+		</Unit>
+		<Unit filename="D:/Projects/Fortune Algorithm/Fortune Algorithm/Event.h">
+			<Option target="Fortune_Algorithm"/>
+		</Unit>
+		<Unit filename="D:/Projects/Fortune Algorithm/Fortune Algorithm/FortuneAlgorithm.h">
+			<Option target="Fortune_Algorithm"/>
+		</Unit>
+		<Unit filename="D:/Projects/Fortune Algorithm/Fortune Algorithm/Frame.h">
+			<Option target="Fortune_Algorithm"/>
+		</Unit>
+		<Unit filename="D:/Projects/Fortune Algorithm/Fortune Algorithm/PriorityQueue.h">
+			<Option target="Fortune_Algorithm"/>
+		</Unit>
+		<Unit filename="D:/Projects/Fortune Algorithm/Fortune Algorithm/Vector2D.h">
+			<Option target="Fortune_Algorithm"/>
+		</Unit>
+		<Unit filename="D:/Projects/Fortune Algorithm/Fortune Algorithm/VoronoiDiagram.h">
+			<Option target="Fortune_Algorithm"/>
+		</Unit>
+		<Unit filename="D:/Projects/Fortune Algorithm/Fortune Algorithm/main.cpp">
+			<Option target="Fortune_Algorithm"/>
+		</Unit>
+		<Unit filename="D:/Projects/Fortune Algorithm/Fortune Algorithm/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

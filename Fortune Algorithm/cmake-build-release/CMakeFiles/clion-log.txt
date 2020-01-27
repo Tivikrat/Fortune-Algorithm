@@ -1,0 +1,2 @@
+Cannot generate 'Release' into D:\Projects\Fortune Algorithm\Fortune Algorithm\cmake-build-release
+CMakeCache.txt is found in the project dir, only in-source generation will be performed.
