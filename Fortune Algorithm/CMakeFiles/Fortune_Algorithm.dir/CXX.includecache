@@ -1,0 +1,88 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+D:/Projects/Fortune Algorithm/Fortune Algorithm/ArcNode.h
+VoronoiDiagram.h
+D:/Projects/Fortune Algorithm/Fortune Algorithm/VoronoiDiagram.h
+
+D:/Projects/Fortune Algorithm/Fortune Algorithm/Beachline.h
+limits
+-
+cmath
+-
+Vector2D.h
+D:/Projects/Fortune Algorithm/Fortune Algorithm/Vector2D.h
+VoronoiDiagram.h
+D:/Projects/Fortune Algorithm/Fortune Algorithm/VoronoiDiagram.h
+ArcNode.h
+D:/Projects/Fortune Algorithm/Fortune Algorithm/ArcNode.h
+
+D:/Projects/Fortune Algorithm/Fortune Algorithm/Event.h
+Vector2D.h
+D:/Projects/Fortune Algorithm/Fortune Algorithm/Vector2D.h
+VoronoiDiagram.h
+D:/Projects/Fortune Algorithm/Fortune Algorithm/VoronoiDiagram.h
+
+D:/Projects/Fortune Algorithm/Fortune Algorithm/FortuneAlgorithm.h
+list
+-
+unordered_map
+-
+PriorityQueue.h
+D:/Projects/Fortune Algorithm/Fortune Algorithm/PriorityQueue.h
+VoronoiDiagram.h
+D:/Projects/Fortune Algorithm/Fortune Algorithm/VoronoiDiagram.h
+BeachLine.h
+D:/Projects/Fortune Algorithm/Fortune Algorithm/Beachline.h
+ArcNode.h
+D:/Projects/Fortune Algorithm/Fortune Algorithm/ArcNode.h
+Event.h
+D:/Projects/Fortune Algorithm/Fortune Algorithm/Event.h
+
+D:/Projects/Fortune Algorithm/Fortune Algorithm/Frame.h
+array
+-
+limits
+-
+Vector2D.h
+D:/Projects/Fortune Algorithm/Fortune Algorithm/Vector2D.h
+
+D:/Projects/Fortune Algorithm/Fortune Algorithm/PriorityQueue.h
+ostream
+-
+vector
+-
+memory
+-
+
+D:/Projects/Fortune Algorithm/Fortune Algorithm/Vector2D.h
+ostream
+-
+cmath
+-
+
+D:/Projects/Fortune Algorithm/Fortune Algorithm/VoronoiDiagram.h
+vector
+-
+list
+-
+unordered_set
+-
+Frame.h
+D:/Projects/Fortune Algorithm/Fortune Algorithm/Frame.h
+
+D:/Projects/Fortune Algorithm/Fortune Algorithm/main.cpp
+chrono
+-
+iostream
+-
+random
+-
+FortuneAlgorithm.h
+D:/Projects/Fortune Algorithm/Fortune Algorithm/FortuneAlgorithm.h
+

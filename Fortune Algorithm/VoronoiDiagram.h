@@ -19,13 +19,9 @@ public:
         Cell *cell;
     };
 
-    struct Vertex {
-        Vector2D point;
-    };
-
     struct HalfEdge {
-        Vertex *origin = nullptr;
-        Vertex *destination = nullptr;
+        Vector2D *origin = nullptr;
+        Vector2D *destination = nullptr;
         HalfEdge *twin = nullptr;
         Cell *incidentCell;
         HalfEdge *previous = nullptr;
@@ -63,7 +59,7 @@ public:
         return cells;
     }
 
-    const std::list<VoronoiDiagram::Vertex> &getVertices() const {
+    const std::list<Vector2D> &getVertices() const {
         return vertices;
     }
 
@@ -74,27 +70,26 @@ public:
 private:
     std::vector<Site> sites;
     std::vector<Cell> cells;
-    std::list<Vertex> vertices;
+    std::list<Vector2D> vertices;
     std::list<HalfEdge> half_edges;
 
     friend FortuneAlgorithm;
 
-    VoronoiDiagram::Vertex *createVertex(Vector2D point) {
-        vertices.emplace_back();
-        vertices.back().point = point;
+    Vector2D *addVertex(Vector2D point) {
+        vertices.push_back(point);
         return &vertices.back();
     }
 
-    VoronoiDiagram::Vertex *createCorner(Frame box, Frame::Side side) {
+    Vector2D *createCorner(Frame box, Frame::Side side) {
         switch (side) {
             case Frame::Side::LEFT:
-                return createVertex(Vector2D(box.left, box.top));
+                return addVertex(Vector2D(box.left, box.top));
             case Frame::Side::BOTTOM:
-                return createVertex(Vector2D(box.left, box.bottom));
+                return addVertex(Vector2D(box.left, box.bottom));
             case Frame::Side::RIGHT:
-                return createVertex(Vector2D(box.right, box.bottom));
+                return addVertex(Vector2D(box.right, box.bottom));
             case Frame::Side::TOP:
-                return createVertex(Vector2D(box.right, box.top));
+                return addVertex(Vector2D(box.right, box.top));
             default:
                 return nullptr;
         }
