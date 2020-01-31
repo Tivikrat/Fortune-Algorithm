@@ -9,14 +9,14 @@ struct ArcNode {
         RED, BLACK
     };
 
-    ArcNode *parent;
-    ArcNode *left;
-    ArcNode *right;
-    VoronoiDiagram::Site *site;
-    VoronoiDiagram::HalfEdge *leftHalfEdge;
-    VoronoiDiagram::HalfEdge *rightHalfEdge;
-    Event *event;
-    ArcNode *previous;
-    ArcNode *next;
+    ArcNode *parent = nullptr;
+    ArcNode *left = nullptr;
+    ArcNode *right = nullptr;
+    VoronoiDiagram::Site *site = nullptr;
+    VoronoiDiagram::HalfEdge *leftHalfEdge = nullptr;
+    VoronoiDiagram::HalfEdge *rightHalfEdge = nullptr;
+    Event *event = nullptr;
+    ArcNode *previous = nullptr;
+    ArcNode *next = nullptr;
     Color color;
 };
