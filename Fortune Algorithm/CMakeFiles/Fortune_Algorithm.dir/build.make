@@ -60,15 +60,15 @@ CMakeFiles/Fortune_Algorithm.dir/main.cpp.obj: CMakeFiles/Fortune_Algorithm.dir/
 CMakeFiles/Fortune_Algorithm.dir/main.cpp.obj: CMakeFiles/Fortune_Algorithm.dir/includes_CXX.rsp
 CMakeFiles/Fortune_Algorithm.dir/main.cpp.obj: main.cpp
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="D:\Projects\Fortune Algorithm\Fortune Algorithm\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/Fortune_Algorithm.dir/main.cpp.obj"
-	C:\Users\Tivikrat\Desktop\mingw64\bin\g++.exe  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles\Fortune_Algorithm.dir\main.cpp.obj -c "D:\Projects\Fortune Algorithm\Fortune Algorithm\main.cpp"
+	D:\MinGW\bin\g++.exe  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles\Fortune_Algorithm.dir\main.cpp.obj -c "D:\Projects\Fortune Algorithm\Fortune Algorithm\main.cpp"
 
 CMakeFiles/Fortune_Algorithm.dir/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Fortune_Algorithm.dir/main.cpp.i"
-	C:\Users\Tivikrat\Desktop\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "D:\Projects\Fortune Algorithm\Fortune Algorithm\main.cpp" > CMakeFiles\Fortune_Algorithm.dir\main.cpp.i
+	D:\MinGW\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "D:\Projects\Fortune Algorithm\Fortune Algorithm\main.cpp" > CMakeFiles\Fortune_Algorithm.dir\main.cpp.i
 
 CMakeFiles/Fortune_Algorithm.dir/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Fortune_Algorithm.dir/main.cpp.s"
-	C:\Users\Tivikrat\Desktop\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "D:\Projects\Fortune Algorithm\Fortune Algorithm\main.cpp" -o CMakeFiles\Fortune_Algorithm.dir\main.cpp.s
+	D:\MinGW\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "D:\Projects\Fortune Algorithm\Fortune Algorithm\main.cpp" -o CMakeFiles\Fortune_Algorithm.dir\main.cpp.s
 
 # Object files for target Fortune_Algorithm
 Fortune_Algorithm_OBJECTS = \

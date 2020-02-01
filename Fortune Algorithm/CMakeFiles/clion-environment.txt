@@ -1,4 +1,4 @@
-ToolSet: w64 6.0 (local)@C:\Users\Tivikrat\Desktop\mingw64
+ToolSet: 5.2 (local)@D:\MinGW
 Options: 
 
 Options:

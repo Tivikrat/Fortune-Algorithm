@@ -11,20 +11,20 @@
 				<Option working_dir="D:/Projects/Fortune Algorithm/Fortune Algorithm"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="C:/Users/Tivikrat/Desktop/mingw64/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 all"/>
-					<CompileFile command="C:/Users/Tivikrat/Desktop/mingw64/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="C:/Users/Tivikrat/Desktop/mingw64/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="C:/Users/Tivikrat/Desktop/mingw64/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="D:/MinGW/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="D:/MinGW/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="D:/MinGW/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="D:/MinGW/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="edit_cache">
 				<Option working_dir="D:/Projects/Fortune Algorithm/Fortune Algorithm"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="C:/Users/Tivikrat/Desktop/mingw64/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 edit_cache"/>
-					<CompileFile command="C:/Users/Tivikrat/Desktop/mingw64/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="C:/Users/Tivikrat/Desktop/mingw64/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="C:/Users/Tivikrat/Desktop/mingw64/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="D:/MinGW/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="D:/MinGW/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="D:/MinGW/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="D:/MinGW/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="Fortune_Algorithm">
@@ -35,18 +35,18 @@
 				<Option compiler="gcc"/>
 				<Compiler>
 					<Add directory="D:/Projects/Fortune Algorithm/Fortune Algorithm/."/>
-					<Add directory="C:/Users/Tivikrat/Desktop/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/7.3.0/include/c++"/>
-					<Add directory="C:/Users/Tivikrat/Desktop/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/7.3.0/include/c++/x86_64-w64-mingw32"/>
-					<Add directory="C:/Users/Tivikrat/Desktop/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/7.3.0/include/c++/backward"/>
-					<Add directory="C:/Users/Tivikrat/Desktop/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/7.3.0/include"/>
-					<Add directory="C:/Users/Tivikrat/Desktop/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/7.3.0/include-fixed"/>
-					<Add directory="C:/Users/Tivikrat/Desktop/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/7.3.0/../../../../x86_64-w64-mingw32/include"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/8.2.0/include/c++"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/8.2.0/include/c++/mingw32"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/8.2.0/include/c++/backward"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/8.2.0/include"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/8.2.0/../../../../include"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/8.2.0/include-fixed"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="C:/Users/Tivikrat/Desktop/mingw64/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 Fortune_Algorithm"/>
-					<CompileFile command="C:/Users/Tivikrat/Desktop/mingw64/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="C:/Users/Tivikrat/Desktop/mingw64/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="C:/Users/Tivikrat/Desktop/mingw64/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="D:/MinGW/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 Fortune_Algorithm"/>
+					<CompileFile command="D:/MinGW/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="D:/MinGW/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="D:/MinGW/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="Fortune_Algorithm/fast">
@@ -57,28 +57,28 @@
 				<Option compiler="gcc"/>
 				<Compiler>
 					<Add directory="D:/Projects/Fortune Algorithm/Fortune Algorithm/."/>
-					<Add directory="C:/Users/Tivikrat/Desktop/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/7.3.0/include/c++"/>
-					<Add directory="C:/Users/Tivikrat/Desktop/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/7.3.0/include/c++/x86_64-w64-mingw32"/>
-					<Add directory="C:/Users/Tivikrat/Desktop/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/7.3.0/include/c++/backward"/>
-					<Add directory="C:/Users/Tivikrat/Desktop/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/7.3.0/include"/>
-					<Add directory="C:/Users/Tivikrat/Desktop/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/7.3.0/include-fixed"/>
-					<Add directory="C:/Users/Tivikrat/Desktop/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/7.3.0/../../../../x86_64-w64-mingw32/include"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/8.2.0/include/c++"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/8.2.0/include/c++/mingw32"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/8.2.0/include/c++/backward"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/8.2.0/include"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/8.2.0/../../../../include"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/8.2.0/include-fixed"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="C:/Users/Tivikrat/Desktop/mingw64/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 Fortune_Algorithm/fast"/>
-					<CompileFile command="C:/Users/Tivikrat/Desktop/mingw64/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="C:/Users/Tivikrat/Desktop/mingw64/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="C:/Users/Tivikrat/Desktop/mingw64/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="D:/MinGW/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 Fortune_Algorithm/fast"/>
+					<CompileFile command="D:/MinGW/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="D:/MinGW/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="D:/MinGW/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="rebuild_cache">
 				<Option working_dir="D:/Projects/Fortune Algorithm/Fortune Algorithm"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="C:/Users/Tivikrat/Desktop/mingw64/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
-					<CompileFile command="C:/Users/Tivikrat/Desktop/mingw64/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="C:/Users/Tivikrat/Desktop/mingw64/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="C:/Users/Tivikrat/Desktop/mingw64/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="D:/MinGW/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="D:/MinGW/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="D:/MinGW/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="D:/MinGW/bin/mingw32-make.exe -f &quot;D:/Projects/Fortune Algorithm/Fortune Algorithm/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 		</Build>

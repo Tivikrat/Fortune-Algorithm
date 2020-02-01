@@ -8,7 +8,7 @@
 long long getMemoryUsage() {
     PROCESS_MEMORY_COUNTERS pmc;
     GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc));
-    return pmc.WorkingSetSize;
+    return pmc.PeakPagefileUsage;
 }
 
 std::vector<Vector2D> generatePoints(int count) {
@@ -29,14 +29,14 @@ void generateRandomDiagram(std::size_t count) {
     FortuneAlgorithm algorithm(points);
     algorithm.construct();
     algorithm.bound(Frame{-0.05, -0.05, 1.05, 1.05});
+    algorithm.getDiagram();
     auto time = clock() - start;
     std::cout << count << " points for " << time << " ms using " << getMemoryUsage() << " bytes" << std::endl;
-    algorithm.getDiagram();
 }
 
 int main() {
-    while (true) {
-        generateRandomDiagram(64000);
+    for (double count = 1000; count < 1025000; count *= 1.18920712) {
+        generateRandomDiagram(count);
     }
     system("pause");
     return 0;
